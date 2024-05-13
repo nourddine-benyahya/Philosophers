@@ -6,142 +6,56 @@
 /*   By: nbenyahy <nbenyahy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:14:53 by nbenyahy          #+#    #+#             */
-/*   Updated: 2024/05/08 18:14:52 by nbenyahy         ###   ########.fr       */
+/*   Updated: 2024/05/13 17:51:55 by nbenyahy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
-#include "unistd.h"
-#include "stdio.h"
-#include "pthread.h"
 
-long long time_stamp(void)
+void	*routine(void *philo)
 {
-   struct timeval tv;
-   
-   gettimeofday(&tv, NULL);
-   return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
+	bool	status;
+
+	status = true;
+	((t_philo *)philo)->last_meal = time_stamp();
+	if (((t_philo *)philo)->index % 2 == 0)
+	{
+		if (actions((t_philo *)philo, THINKING) == 1)
+			return (NULL);
+		n3ass(10, (t_philo *)philo);
+	}
+	while (status)
+	{
+		if (actions((t_philo *)philo, THINKING) == 1)
+			break ;
+		if (pickup_forks((t_philo *)philo) == 1)
+			break ;
+		if (eat((t_philo *)philo) == 1)
+			break ;
+		if (_sleep((t_philo *)philo) == 1)
+			break ;
+		pthread_mutex_lock(&((t_philo *)philo)->env->status_mutex);
+		status = ((t_philo *)philo)->env->status;
+		pthread_mutex_unlock(&((t_philo *)philo)->env->status_mutex);
+	}
+	return (NULL);
 }
 
-int  n3ass(long long time, t_philo *philos)
+int	main(int ac, char **av)
 {
-   // (void )philos;
-   long long timer = time_stamp();
-   while (1)
-   {
-      if (time_stamp() - timer >= time)
-         break;
-      if (philos->env->status == false)
-         return (1);
-   }
-   return (0);
-}
+	t_philo	*philo;
+	t_philo	*tmp;
 
-void *roting(void *philo)
-{
-   t_philo *philos;
-
-   philos = (t_philo *)philo;
-   if ((philos->index + 1) % 2 == 0)
-      n3ass(50, philos);
-
-   while (philos->env->status == true)
-   {
-
-      //think while waiting for fork
-          if (philos->env->status == true)
-      {
-      pthread_mutex_lock(philos->env->printing);
-      printf(BGRN UGRN "%lld philo %d is thinking\n" reset, time_stamp() - philos->env->time, philos->index);
-      pthread_mutex_unlock(philos->env->printing);
-      }
-      
-      //take the right fort
-      pthread_mutex_lock(philos->fork->right);
-          if (philos->env->status == true)
-      {
-      pthread_mutex_lock(philos->env->printing);
-      printf(BGRN UGRN "%lld philo %d is taking a right fork\n" reset, time_stamp() - philos->env->time, philos->index);
-      pthread_mutex_unlock(philos->env->printing);
-      }
-
-      //take the left fork
-      pthread_mutex_lock(philos->fork->left);
-    if (philos->env->status == true)
-      {
-      pthread_mutex_lock(philos->env->printing);
-      printf(BGRN UGRN "%lld philo %d is taking a left fork\n" reset, time_stamp() - philos->env->time, philos->index);
-      pthread_mutex_unlock(philos->env->printing);
-      }
-
-      //eating time
-      philos->last_meal = time_stamp();
-    if (philos->env->status == true)
-      {
-      pthread_mutex_lock(philos->env->printing);
-      printf(BBLU UBLU "%lld philo %d is eating\n" reset, time_stamp() - philos->env->time, philos->index);
-      pthread_mutex_unlock(philos->env->printing);
-      }
-
-      if (n3ass(philos->env->time_to_eat, philos) == 1)
-      {
-         pthread_mutex_unlock(philos->fork->right);
-         pthread_mutex_unlock(philos->fork->left);
-         break;
-      }
-
-      pthread_mutex_unlock(philos->fork->right);
-      pthread_mutex_unlock(philos->fork->left);
-
-      //sleeping time
-      if (philos->env->status == true)
-      {
-         pthread_mutex_lock(philos->env->printing);
-         printf(BGRN UGRN "%lld philo %d is sleeping\n" reset, time_stamp() - philos->env->time, philos->index);
-         pthread_mutex_unlock(philos->env->printing);   
-      }
-
-      if (n3ass(philos->env->time_to_sleep, philos) == 1)
-      {
-         break;
-      }
-      // printf("q\n");
-   }
-   return (NULL);
-}
-
-int main(int ac, char **av)
-{
-   t_philo *philo;
-   t_philo *head;
-
-   philo = parsing(ac, av);
-   head = philo;
-   while (head)
-   {
-      pthread_create(&head->thread, NULL, &roting, head);
-      head = head->next;
-   }
-   head = philo;
-   while (head->env->status)
-   {
-      if (time_stamp() - head->last_meal > head->env->time_to_die)
-      {
-         head->env->status = false;
-         usleep(500);
-         pthread_mutex_lock(head->env->printing);
-         printf(MAGHB BGRN UGRN "\n\v %lld philo %d is deaing take %lld\n" reset, time_stamp() - head->env->time , head->index, time_stamp() - head->last_meal);
-         pthread_mutex_unlock(head->env->printing);
-
-         break;
-      }
-      head = head->next;
-      if (head == NULL)
-         head = philo;
-   }
-   while (philo)
-   {
-      pthread_join(philo->thread, NULL);
-      philo= philo->next;
-   }
+	philo = parsing(ac, av);
+	if (philo == NULL)
+		return (1);
+	tmp = philo;
+	while (tmp)
+	{
+		pthread_create(&tmp->thread, NULL, &routine, tmp);
+		tmp = tmp->next;
+	}
+	philos_lister(philo);
+	join_and_clean(philo);
+	return (0);
 }

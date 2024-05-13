@@ -3,6 +3,9 @@
         "stdio.h": "c",
         "limits.h": "c",
         "unistd.h": "c",
-        "pthread.h": "c"
+        "pthread.h": "c",
+        "ios": "c",
+        "string.h": "c",
+        "philosophers.h": "c"
     }
 }

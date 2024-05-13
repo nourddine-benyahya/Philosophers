@@ -6,91 +6,133 @@
 /*   By: nbenyahy <nbenyahy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 19:18:06 by nbenyahy          #+#    #+#             */
-/*   Updated: 2024/05/08 17:19:53 by nbenyahy         ###   ########.fr       */
+/*   Updated: 2024/05/13 17:32:48 by nbenyahy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-int	ft_atoi(const char *nptr)
+int	ft_atoi(const char *nptr, t_error *error)
 {
 	unsigned long long	res;
 
 	res = 0;
-	while (*nptr == ' ' || (*nptr >= 9 && *nptr <= 13))
-		nptr++;
 	if (*nptr == '-' || *nptr == '+')
 	{
 		if (*nptr == '-')
-			exit_with_msg(YELHB BRED URED "\n huh it's negative value\n" reset, 1);
+			return (set_error(error, "huh it's negative value\n", 1), 1);
 		nptr++;
 	}
 	while (*nptr && (*nptr) >= '0' && (*nptr) <= '9')
 	{
 		res = (res * 10) + (*nptr - '0');
 		if (res > INT_MAX)
-			exit_with_msg(YELHB BRED URED "\n it's more than int max\n" reset, 1);
+			return (set_error(error, "it's more than int max\n", 1), 1);
 		nptr++;
 	}
+	if (*nptr)
+		return (set_error(error, "it's not a number\n", 1), 1);
 	return (res);
 }
 
+t_philo	*init_philo(t_env *env, int i)
+{
+	t_philo	*philo;
 
+	philo = (t_philo *)malloc(sizeof(t_philo));
+	if (!philo)
+		return (NULL);
+	philo->env = env;
+	philo->last_meal = time_stamp();
+	philo->index = i + 1;
+	philo->eating_nbr = 0;
+	philo->fork.right = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+	if (!philo->fork.right)
+		return (free(philo), NULL);
+	if (pthread_mutex_init(&philo->meal, NULL))
+		return (free(philo), free(philo->fork.right), NULL);
+	if (pthread_mutex_init(philo->fork.right, NULL))
+		return (free(philo), free(philo->fork.right), NULL);
+	return (philo);
+}
+
+t_env	*create_env(int ac, char **av)
+{
+	t_env	*env;
+	t_error	*error;
+
+	env = malloc(sizeof(t_env));
+	error = malloc(sizeof(t_error));
+	if (!env || !error)
+		return (NULL);
+	error->exit_status = 0;
+	error->msg = NULL;
+	env->philo_num = ft_atoi(av[1], error);
+	env->time_to_die = ft_atoi(av[2], error);
+	env->time_to_eat = ft_atoi(av[3], error);
+	env->time_to_sleep = ft_atoi(av[4], error);
+	if (ac == 6)
+		env->nbr_must_eat = ft_atoi(av[5], error);
+	else
+		env->nbr_must_eat = -1;
+	if (error->exit_status == 1)
+		return (printf("%s", error->msg), free(error->msg), free(error),
+			free(env), NULL);
+	if (env->philo_num > 200 || env->time_to_die < 60 || env->time_to_eat < 60
+		|| env->time_to_sleep < 60)
+		return (printf("the info it's not correct \n"), free(error->msg),
+			free(error), free(env), NULL);
+	return (free(error->msg), free(error), env);
+}
+
+t_philo	*create_philos(t_env *env)
+{
+	t_philo	*philo;
+	t_philo	*head;
+	t_philo	*prev;
+	int		i;
+
+	prev = NULL;
+	head = NULL;
+	i = 0;
+	while (i < env->philo_num)
+	{
+		philo = init_philo(env, i);
+		if (philo == NULL)
+			return (NULL);
+		if (i == 0)
+			head = philo;
+		else
+		{
+			prev->next = philo;
+			philo->fork.left = prev->fork.right;
+		}
+		prev = philo;
+		i++;
+	}
+	head->fork.left = prev->fork.right;
+	return (prev->next = NULL, head);
+}
 
 t_philo	*parsing(int ac, char **av)
 {
-    t_env	*env = NULL;
-    t_philo	*philo;
-    t_philo *head = NULL;
-    t_philo *prev = NULL;
+	t_philo	*philo;
+	t_env	*env;
 
-    if (ac != 6 && ac != 5)
-        exit_with_msg(YELHB BRED URED "\n the number of arg not valid \n" reset, 1);
-	env = malloc(sizeof(t_env));
-	if (!env)
+	if (ac != 6 && ac != 5)
+		return (printf("the number of arg not valid \n"), NULL);
+	env = create_env(ac, av);
+	if (env == NULL || env->nbr_must_eat == 0)
 		return (NULL);
-    env->time = time_stamp();
-    env->philo_num = ft_atoi(av[1]);
 	env->status = true;
-    env->time_to_die = ft_atoi(av[2]);
-    env->time_to_eat = ft_atoi(av[3]);
-    env->time_to_sleep = ft_atoi(av[4]);
-    env->printing = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t));
-    if (ac == 6)
-        env->nbr_must_eat = ft_atoi(av[5]);
-    if (env->philo_num > 200 || env->time_to_die < 60 || env->time_to_eat < 60 
-        || env->time_to_sleep < 60)
-        exit_with_msg(YELHB BRED URED "\n the info it's not correct \n" reset, 1);
-	
-	
- // create a circular linked list
-    int i = 0;
-    while (i < env->philo_num)
-    {
-        philo = (t_philo*)malloc(sizeof(t_philo));
-        philo->index = i;
-        philo->eating_nbr = 0;
-        philo->env = env;
-		philo->last_meal = time_stamp();
-        philo->fork = (t_fork*)malloc(sizeof(t_fork));
-        philo->fork->right = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t));
-        if (pthread_mutex_init(philo->fork->right, NULL) != 0)
-            exit_with_msg(YELHB BRED URED "\n mutex init has failed\n" reset, 1);
-        if (i == 0)
-        {
-            head = philo;
-        }
-        else
-        {
-            prev->next = philo;
-            philo->fork->left = prev->fork->right;
-        }
-        prev = philo;
-        i++;
-    }
-    // Connect the last philosopher to the first one
-    head->fork->left = prev->fork->right;
-    prev->next = NULL;
-
-    return (head);
+	env->timer = 0;
+	env->nbr_must_eat_total = env->nbr_must_eat * env->philo_num;
+	pthread_mutex_init(&env->status_mutex, NULL);
+	pthread_mutex_init(&env->timer_mutex, NULL);
+	pthread_mutex_init(&env->printing, NULL);
+	env->time = time_stamp();
+	philo = create_philos(env);
+	if (philo == NULL)
+		return (free(env), NULL);
+	return (philo);
 }

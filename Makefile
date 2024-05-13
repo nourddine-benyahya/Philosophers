@@ -1,10 +1,10 @@
-SRC = sources/parsing.c sources/cleaning.c sources/philosophers.c
+SRC = sources/parsing.c sources/helper.c sources/philosophers.c sources/actions.c
 
 OBJ = $(SRC:.c=.o)
 
 CC = cc
 
-CFLAGS = -Wall -Wextra -Werror -I includes -pthread -fsanitize=address -g
+CFLAGS = -Wall -Wextra -Werror -I includes -pthread
 
 NAME = philosophers
 
