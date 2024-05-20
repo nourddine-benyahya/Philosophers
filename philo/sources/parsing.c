@@ -6,7 +6,7 @@
 /*   By: nbenyahy <nbenyahy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 19:18:06 by nbenyahy          #+#    #+#             */
-/*   Updated: 2024/05/13 17:32:48 by nbenyahy         ###   ########.fr       */
+/*   Updated: 2024/05/14 11:19:53 by nbenyahy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,18 +20,20 @@ int	ft_atoi(const char *nptr, t_error *error)
 	if (*nptr == '-' || *nptr == '+')
 	{
 		if (*nptr == '-')
-			return (set_error(error, "huh it's negative value\n", 1), 1);
+			return (set_error(error, \
+								REDHB "huh it's negative value\n" RESET, 1), 1);
 		nptr++;
 	}
 	while (*nptr && (*nptr) >= '0' && (*nptr) <= '9')
 	{
 		res = (res * 10) + (*nptr - '0');
 		if (res > INT_MAX)
-			return (set_error(error, "it's more than int max\n", 1), 1);
+			return (set_error(error, \
+								REDHB "it's more than int max\n" RESET, 1), 1);
 		nptr++;
 	}
 	if (*nptr)
-		return (set_error(error, "it's not a number\n", 1), 1);
+		return (set_error(error, REDHB "it's not a number\n" RESET, 1), 1);
 	return (res);
 }
 
@@ -80,8 +82,8 @@ t_env	*create_env(int ac, char **av)
 			free(env), NULL);
 	if (env->philo_num > 200 || env->time_to_die < 60 || env->time_to_eat < 60
 		|| env->time_to_sleep < 60)
-		return (printf("the info it's not correct \n"), free(error->msg),
-			free(error), free(env), NULL);
+		return (printf(REDHB "the info it's not correct \n" RESET), \
+						free(error->msg), free(error), free(env), NULL);
 	return (free(error->msg), free(error), env);
 }
 
@@ -120,7 +122,7 @@ t_philo	*parsing(int ac, char **av)
 	t_env	*env;
 
 	if (ac != 6 && ac != 5)
-		return (printf("the number of arg not valid \n"), NULL);
+		return (printf(REDHB "the number of arg not valid \n" RESET), NULL);
 	env = create_env(ac, av);
 	if (env == NULL || env->nbr_must_eat == 0)
 		return (NULL);

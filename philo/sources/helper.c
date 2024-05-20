@@ -6,7 +6,7 @@
 /*   By: nbenyahy <nbenyahy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/12 18:20:52 by nbenyahy          #+#    #+#             */
-/*   Updated: 2024/05/13 17:55:13 by nbenyahy         ###   ########.fr       */
+/*   Updated: 2024/05/13 21:35:29 by nbenyahy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,36 +42,6 @@ void	set_error(t_error *error, char *msg, int exit_status)
 	{
 		error->msg = ft_strdup(msg);
 		error->exit_status = exit_status;
-	}
-}
-
-void	philos_lister(t_philo *philo)
-{
-	t_philo	*tmp;
-	bool	status;
-
-	status = true;
-	tmp = philo;
-	while (status)
-	{
-		pthread_mutex_lock(&tmp->meal);
-		if (time_stamp() - tmp->last_meal > tmp->env->time_to_die)
-		{
-			pthread_mutex_lock(&tmp->env->status_mutex);
-			tmp->env->status = false;
-			pthread_mutex_unlock(&tmp->env->status_mutex);
-			pthread_mutex_lock(&tmp->env->printing);
-			printf("%lld %d %s\n", time_stamp() - tmp->env->time, tmp->index,
-				DIED);
-			pthread_mutex_unlock(&tmp->env->printing);
-		}
-		pthread_mutex_unlock(&tmp->meal);
-		tmp = tmp->next;
-		if (tmp == NULL)
-			tmp = philo;
-		pthread_mutex_lock(&tmp->env->status_mutex);
-		status = tmp->env->status;
-		pthread_mutex_unlock(&tmp->env->status_mutex);
 	}
 }
 

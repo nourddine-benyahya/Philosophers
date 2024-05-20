@@ -6,7 +6,7 @@
 /*   By: nbenyahy <nbenyahy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 15:44:51 by nbenyahy          #+#    #+#             */
-/*   Updated: 2024/05/13 17:11:20 by nbenyahy         ###   ########.fr       */
+/*   Updated: 2024/05/15 13:04:11 by nbenyahy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,12 @@ int	pickup_forks(t_philo *philo)
 		pthread_mutex_unlock(philo->fork.right);
 		return (1);
 	}
+	if (philo->env->philo_num == 1)
+	{
+		n3ass(philo->env->time_to_die, philo);
+		pthread_mutex_unlock(philo->fork.right);
+		return (1);
+	}
 	pthread_mutex_lock(philo->fork.left);
 	if (actions(philo, LEFT_FORK) == 1)
 	{
@@ -102,14 +108,5 @@ int	eat(t_philo *philo)
 		return (1);
 	}
 	put_forks_down(philo->fork.right, philo->fork.left);
-	return (0);
-}
-
-int	_sleep(t_philo *philo)
-{
-	if (actions(philo, SLEEPING) == 1)
-		return (1);
-	if (n3ass(philo->env->time_to_sleep, philo) == 1)
-		return (1);
 	return (0);
 }
