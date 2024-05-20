@@ -6,7 +6,7 @@
 /*   By: nbenyahy <nbenyahy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:13:19 by nbenyahy          #+#    #+#             */
-/*   Updated: 2024/05/20 11:48:50 by nbenyahy         ###   ########.fr       */
+/*   Updated: 2024/05/20 17:25:47 by nbenyahy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ typedef struct s_env
 	sem_t		*print;
 	sem_t		*meal;
 	sem_t		*init_time;
+	sem_t		*meal_nbr;
 	bool		status;
 }				t_env;
 
@@ -66,6 +67,7 @@ typedef struct s_philo
 	long long	time_stemp;
 	int			index;
 	char		*mut_name;
+	char		*meal_mut_name;
 	int			eating_nbr;
 	long long	last_meal;
 	sem_t		*meal;

@@ -6,7 +6,7 @@
 /*   By: nbenyahy <nbenyahy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:14:53 by nbenyahy          #+#    #+#             */
-/*   Updated: 2024/05/20 12:00:43 by nbenyahy         ###   ########.fr       */
+/*   Updated: 2024/05/20 17:31:40 by nbenyahy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,25 @@ int actions(t_philo *philo, char *action)
 		printf("%lld %d %s\n", time_stamp() - philo->env->time, philo->index, EATING);
 	sem_post(philo->env->print);
 	return (0);
+}
+
+void	meal_nbr_listener(t_philo *philo)
+{
+	t_philo	*tmp;
+
+	tmp = philo;
+	while (tmp)
+	{
+		sem_wait(tmp->env->meal_nbr);
+		tmp = tmp->next;
+	}
+	tmp = philo;
+	sem_wait(tmp->env->print);
+	while (tmp)
+	{
+		kill(tmp->process, 1);
+		tmp = tmp->next;
+	}
 }
 
 void	listener(t_philo *philo)
@@ -41,6 +60,8 @@ void	listener(t_philo *philo)
 
 void	*killer(t_philo *philo)
 {
+	if (philo->env->nbr_must_eat != -1)
+		return (NULL);
 	sem_wait(philo->env->mutex);
 	sem_wait(philo->env->print);
 	printf("%lld %d died\n", time_stamp() - philo->env->time ,philo->index);
@@ -57,6 +78,9 @@ int	main(int ac, char **av)
 	t_philo	*philo;
 	t_philo	*tmp;
 	bool	status;
+	bool	meal_status;
+	long long i = 0;
+
 
 	philo = parsing(ac, av);
 	if (philo == NULL)
@@ -64,21 +88,18 @@ int	main(int ac, char **av)
 	philo->head = philo;
 	tmp = philo;
 	status = false;
+	if (philo->env->nbr_must_eat != -1)
+		meal_status = false;
+	else
+		meal_status = true;
 	while (tmp)
 	{
 		tmp->process = fork();
 		if (tmp->process == 0)
 		{
-			// sem_wait(tmp->env->init_time);
-			// tmp->last_meal = time_stamp();
-			// tmp->env->time = time_stamp();
-			// if (tmp->index %2 == 0)
-			// 	usleep(50);
 			actions(tmp, THINKING);
 			sem_wait(tmp->env->start);
-			pthread_create(&tmp->thread, NULL, (void *)listener , tmp);
-			tmp->last_meal = time_stamp();
-			// tmp->env->time = time_stamp();
+			pthread_create(&tmp->thread, NULL, (void *)listener, tmp);
 			while (1)
 			{
 				if (status)
@@ -90,7 +111,9 @@ int	main(int ac, char **av)
 
 				sem_wait(tmp->env->forks);
 				actions(tmp, LEFT_FORK);
-
+				i++;
+				if (tmp->env->nbr_must_eat != -1 && i == tmp->env->nbr_must_eat)
+					sem_post(tmp->env->meal_nbr);
 				sem_wait(philo->meal);
 				tmp->last_meal = time_stamp();
 				sem_post(philo->meal);
@@ -110,12 +133,6 @@ int	main(int ac, char **av)
 			tmp = tmp->next;
 			if (tmp == NULL)
 			{
-				// tmp = philo;
-				// while (tmp)
-				// {
-				// 	sem_post(philo->env->init_time);
-				// 	tmp = tmp->next;
-				// }
 				tmp = philo;
 				while (tmp)
 				{
@@ -127,7 +144,8 @@ int	main(int ac, char **av)
 			}
 		}
 	}
-
+	tmp = philo;
+	pthread_create(&tmp->thread, NULL, (void *)meal_nbr_listener, tmp);
 	tmp = philo;
 	killer(tmp);
 	tmp = philo;
@@ -140,9 +158,10 @@ int	main(int ac, char **av)
 	{
 		sem_close(philo->meal);
 		sem_unlink(philo->mut_name);
-		pthread_join(tmp->thread, NULL);
 		tmp = tmp->next;
 	}
+	sem_close(philo->env->meal_nbr);
+	sem_unlink("meal_nbr");
 	sem_close(philo->env->start);
 	sem_unlink("start");
 	sem_close(philo->env->forks);
