@@ -6,7 +6,7 @@ CC = cc
 
 CFLAGS = -Wall -Wextra -Werror -I includes -pthread
 
-NAME = philosophers
+NAME = philo_bonus
 
 all : $(NAME)
 

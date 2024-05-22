@@ -6,7 +6,7 @@
 /*   By: nbenyahy <nbenyahy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:14:53 by nbenyahy          #+#    #+#             */
-/*   Updated: 2024/05/21 18:08:07 by nbenyahy         ###   ########.fr       */
+/*   Updated: 2024/05/22 17:33:49 by nbenyahy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 void	cleaning(t_philo *philo)
 {
-	// printf("start cleaning\n");
 	t_philo	*tmp;
 
 	tmp = philo;
@@ -24,7 +23,6 @@ void	cleaning(t_philo *philo)
 		sem_unlink(philo->mut_name);
 		tmp = tmp->next;
 	}
-	// printf("done unliking\n");
 	sem_unlink("meal_nbr");
 	sem_close(philo->env->start);
 	sem_unlink("start");
@@ -35,7 +33,6 @@ void	cleaning(t_philo *philo)
 	sem_close(philo->env->print);
 	sem_unlink("print");
 	free(philo->env);
-	// printf("done cleaning\n");
 }
 
 int	main(int ac, char **av)
@@ -51,21 +48,19 @@ int	main(int ac, char **av)
 	i = 0;
 	tmp = philo;
 	status = false;
+			tmp->env->time = time_stamp();
 	while (tmp)
 	{
 		tmp->process = fork();
 		if (tmp->process == 0)
 		{
-			actions(tmp, THINKING);
 			sem_wait(tmp->env->start); 
 			// tmp->env->time = time_stamp();
 			// tmp->last_meal = time_stamp();
 			pthread_create(&tmp->thread, NULL, (void *)listener, tmp);
 			while (1)
 			{
-				if (status)
-					actions(tmp, THINKING);
-				status = true;
+				actions(tmp, THINKING);
 				sem_wait(tmp->env->forks);
 				actions(tmp, RIGHT_FORK);
 				sem_wait(tmp->env->forks);
@@ -109,7 +104,6 @@ int	main(int ac, char **av)
 	while (tmp)
 	{
 		waitpid(tmp->process, NULL, 0);
-		// printf("done\n");
 		tmp = tmp->next;
 	}
 	cleaning(philo);

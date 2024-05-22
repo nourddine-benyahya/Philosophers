@@ -6,7 +6,7 @@
 /*   By: nbenyahy <nbenyahy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 15:44:51 by nbenyahy          #+#    #+#             */
-/*   Updated: 2024/05/22 16:41:24 by nbenyahy         ###   ########.fr       */
+/*   Updated: 2024/05/22 17:49:11 by nbenyahy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,21 +35,11 @@ int	actions(t_philo *philos, char *action)
 
 	if (status_method(philos, 'g', NULL))
 	{
-		if (philos->env->nbr_must_eat != -1 && action == EATING)
-		{
-			if (philos->eating_nbr != philos->env->nbr_must_eat)
-			{
-				philos->eating_nbr++;
-				meal_nbr_total(philos, 's', --philos->env->nbr_must_eat_total);
-			}
-		}
 		pthread_mutex_lock(&philos->env->printing);
 		if (status_method(philos, 'g', NULL))
 			printf("%lld %d %s\n", time_stamp() - philos->env->time, \
-					philos->index, action);
+				philos->index, action);
 		pthread_mutex_unlock(&philos->env->printing);
-		if (meal_nbr_total(philos, 'g', 0) == 0)
-			status_method(philos, 's', false);
 		status = 0;
 	}
 	else
@@ -104,5 +94,15 @@ int	eat(t_philo *philo)
 		return (1);
 	}
 	put_forks_down(philo->fork.right, philo->fork.left);
+	if (philo->env->nbr_must_eat != -1)
+	{
+		if (philo->eating_nbr != philo->env->nbr_must_eat)
+		{
+			philo->eating_nbr++;
+			meal_nbr_total(philo, 's', --philo->env->nbr_must_eat_total);
+		}
+	}
+	if (meal_nbr_total(philo, 'g', 0) == 0)
+		status_method(philo, 's', false);
 	return (0);
 }

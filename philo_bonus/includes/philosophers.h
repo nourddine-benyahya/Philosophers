@@ -6,7 +6,7 @@
 /*   By: nbenyahy <nbenyahy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:13:19 by nbenyahy          #+#    #+#             */
-/*   Updated: 2024/05/21 11:26:25 by nbenyahy         ###   ########.fr       */
+/*   Updated: 2024/05/22 17:36:46 by nbenyahy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@
 # include <signal.h>
 
 # define LEFT_FORK "has taken a fork"
-# define RIGHT_FORK "has taken a fork "
+# define RIGHT_FORK "has taken a fork"
 # define EATING "is eating"
 # define DIED "died"
 # define THINKING "is thinking"
