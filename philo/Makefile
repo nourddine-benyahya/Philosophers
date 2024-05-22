@@ -1,4 +1,4 @@
-SRC = sources/parsing.c sources/helper.c sources/philosophers.c sources/actions.c
+SRC = sources/parsing.c sources/helper.c sources/philosophers.c sources/actions.c sources/methods.c
 
 OBJ = $(SRC:.c=.o)
 
@@ -6,7 +6,7 @@ CC = cc
 
 CFLAGS = -Wall -Wextra -Werror -I includes -pthread
 
-NAME = philosophers
+NAME = philo
 
 all : $(NAME)
 

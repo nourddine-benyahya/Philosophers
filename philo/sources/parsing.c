@@ -6,7 +6,7 @@
 /*   By: nbenyahy <nbenyahy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 19:18:06 by nbenyahy          #+#    #+#             */
-/*   Updated: 2024/05/14 11:19:53 by nbenyahy         ###   ########.fr       */
+/*   Updated: 2024/05/22 16:19:33 by nbenyahy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,11 +127,15 @@ t_philo	*parsing(int ac, char **av)
 	if (env == NULL || env->nbr_must_eat == 0)
 		return (NULL);
 	env->status = true;
-	env->timer = 0;
 	env->nbr_must_eat_total = env->nbr_must_eat * env->philo_num;
-	pthread_mutex_init(&env->status_mutex, NULL);
-	pthread_mutex_init(&env->timer_mutex, NULL);
-	pthread_mutex_init(&env->printing, NULL);
+	if ((pthread_mutex_init(&env->status_mutex, NULL)))
+		return (NULL);
+	if ((pthread_mutex_init(&env->timer_mutex, NULL)))
+		return (NULL);
+	if ((pthread_mutex_init(&env->printing, NULL)))
+		return (NULL);
+	if ((pthread_mutex_init(&env->nbr_must_eat_total_mutex, NULL)))
+		return (NULL);
 	env->time = time_stamp();
 	philo = create_philos(env);
 	if (philo == NULL)

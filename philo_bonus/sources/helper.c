@@ -6,34 +6,21 @@
 /*   By: nbenyahy <nbenyahy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/12 18:20:52 by nbenyahy          #+#    #+#             */
-/*   Updated: 2024/05/19 17:49:18 by nbenyahy         ###   ########.fr       */
+/*   Updated: 2024/05/20 17:45:44 by nbenyahy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-int	n3ass(long long time, t_philo *philo)
+int	n3ass(long long time)
 {
 	long long	timer;
-	// int status = 0;
-	(void)philo;
 
 	timer = time_stamp();
 	while (1)
 	{
 		if (time_stamp() - timer >= time)
 			break ;
-		// sem_wait(philo->meal);
-		// if (time_stamp() - philo->last_meal > philo->env->time_to_die)
-		// {
-		// 	sem_post(philo->env->mutex);
-		// 	sem_post(philo->meal);
-		// 	// sem_wait(philo->env->print);
-		// 	status = 1;
-		// 	// break;
-		// }
-		// else
-		// 	sem_post(philo->meal);
 		usleep(50);
 	}
 	return (0);

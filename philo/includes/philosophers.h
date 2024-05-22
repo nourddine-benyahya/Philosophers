@@ -6,7 +6,7 @@
 /*   By: nbenyahy <nbenyahy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:13:19 by nbenyahy          #+#    #+#             */
-/*   Updated: 2024/05/13 21:37:12 by nbenyahy         ###   ########.fr       */
+/*   Updated: 2024/05/22 16:41:24 by nbenyahy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,6 @@ typedef struct s_env
 {
 	int				philo_num;
 	long long		time;
-	long long		timer;
 	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
@@ -47,6 +46,7 @@ typedef struct s_env
 	int				nbr_must_eat_total;
 	bool			status;
 	pthread_mutex_t	printing;
+	pthread_mutex_t	nbr_must_eat_total_mutex;
 	pthread_mutex_t	status_mutex;
 	pthread_mutex_t	timer_mutex;
 }					t_env;
@@ -62,7 +62,6 @@ typedef struct s_philo
 	pthread_t		thread;
 	t_fork			fork;
 	t_env			*env;
-	long long		time_stemp;
 	int				index;
 	int				eating_nbr;
 	long long		last_meal;
@@ -75,12 +74,17 @@ t_philo				*parsing(int ac, char **av);
 long long			time_stamp(void);
 void				philos_lister(t_philo *philo, t_philo *head);
 void				join_and_clean(t_philo *philo);
-int					n3ass(long long time, t_philo *philos);
+int					sleeping(long long time, t_philo *philos);
 int					actions(t_philo *philos, char *action);
 int					put_forks_down(pthread_mutex_t *right,
 						pthread_mutex_t *left);
 int					pickup_forks(t_philo *philo);
 int					eat(t_philo *philo);
+int					_sleep(t_philo *philo);
+bool				status_method(t_philo *philos, char method, bool new_val);
+long long			meal_method(t_philo *philos, char method,
+						long long new_val);
+int					meal_nbr_total(t_philo *philos, char method, int new_val);
 int					_sleep(t_philo *philo);
 
 #endif

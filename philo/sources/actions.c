@@ -6,13 +6,13 @@
 /*   By: nbenyahy <nbenyahy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 15:44:51 by nbenyahy          #+#    #+#             */
-/*   Updated: 2024/05/15 13:04:11 by nbenyahy         ###   ########.fr       */
+/*   Updated: 2024/05/22 16:41:24 by nbenyahy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-int	n3ass(long long time, t_philo *philos)
+int	sleeping(long long time, t_philo *philos)
 {
 	bool		status;
 	long long	timer;
@@ -21,12 +21,10 @@ int	n3ass(long long time, t_philo *philos)
 	timer = time_stamp();
 	while (status)
 	{
-		if (time_stamp() - timer > time)
+		if (time_stamp() - timer >= time)
 			break ;
-		pthread_mutex_lock(&philos->env->status_mutex);
-		status = philos->env->status;
-		pthread_mutex_unlock(&philos->env->status_mutex);
-		usleep(100);
+		status = status_method(philos, 'g', NULL);
+		usleep(58);
 	}
 	return (0);
 }
@@ -35,25 +33,27 @@ int	actions(t_philo *philos, char *action)
 {
 	int	status;
 
-	pthread_mutex_lock(&philos->env->status_mutex);
-	if (philos->env->status)
+	if (status_method(philos, 'g', NULL))
 	{
-		pthread_mutex_lock(&philos->env->printing);
-		if (action == EATING && philos->eating_nbr != philos->env->nbr_must_eat)
+		if (philos->env->nbr_must_eat != -1 && action == EATING)
 		{
-			philos->eating_nbr++;
-			philos->env->nbr_must_eat_total--;
+			if (philos->eating_nbr != philos->env->nbr_must_eat)
+			{
+				philos->eating_nbr++;
+				meal_nbr_total(philos, 's', --philos->env->nbr_must_eat_total);
+			}
 		}
-		printf("%lld %d %s\n", time_stamp() - philos->env->time, philos->index,
-			action);
-		if (philos->env->nbr_must_eat_total == 0)
-			philos->env->status = false;
+		pthread_mutex_lock(&philos->env->printing);
+		if (status_method(philos, 'g', NULL))
+			printf("%lld %d %s\n", time_stamp() - philos->env->time, \
+					philos->index, action);
 		pthread_mutex_unlock(&philos->env->printing);
+		if (meal_nbr_total(philos, 'g', 0) == 0)
+			status_method(philos, 's', false);
 		status = 0;
 	}
 	else
 		status = 1;
-	pthread_mutex_unlock(&philos->env->status_mutex);
 	return (status);
 }
 
@@ -76,7 +76,7 @@ int	pickup_forks(t_philo *philo)
 	}
 	if (philo->env->philo_num == 1)
 	{
-		n3ass(philo->env->time_to_die, philo);
+		sleeping(philo->env->time_to_die, philo);
 		pthread_mutex_unlock(philo->fork.right);
 		return (1);
 	}
@@ -91,18 +91,14 @@ int	pickup_forks(t_philo *philo)
 
 int	eat(t_philo *philo)
 {
-	pthread_mutex_lock(&philo->meal);
-	philo->last_meal = time_stamp();
-	pthread_mutex_unlock(&philo->meal);
+	meal_method(philo, 's', time_stamp());
 	if (actions(philo, EATING) == 1)
 	{
 		put_forks_down(philo->fork.right, philo->fork.left);
 		return (1);
 	}
-	pthread_mutex_lock(&philo->meal);
-	philo->last_meal = time_stamp();
-	pthread_mutex_unlock(&philo->meal);
-	if (n3ass(philo->env->time_to_eat, philo) == 1)
+	meal_method(philo, 's', time_stamp());
+	if (sleeping(philo->env->time_to_eat, philo) == 1)
 	{
 		put_forks_down(philo->fork.right, philo->fork.left);
 		return (1);

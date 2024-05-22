@@ -6,7 +6,7 @@
 /*   By: nbenyahy <nbenyahy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/12 18:20:52 by nbenyahy          #+#    #+#             */
-/*   Updated: 2024/05/13 21:35:29 by nbenyahy         ###   ########.fr       */
+/*   Updated: 2024/05/22 16:41:24 by nbenyahy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,4 +71,13 @@ long long	time_stamp(void)
 
 	gettimeofday(&tv, NULL);
 	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
+}
+
+int	_sleep(t_philo *philo)
+{
+	if (actions(philo, SLEEPING) == 1)
+		return (1);
+	if (sleeping(philo->env->time_to_sleep, philo) == 1)
+		return (1);
+	return (0);
 }
