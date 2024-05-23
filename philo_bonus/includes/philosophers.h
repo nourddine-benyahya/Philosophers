@@ -6,7 +6,7 @@
 /*   By: nbenyahy <nbenyahy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:13:19 by nbenyahy          #+#    #+#             */
-/*   Updated: 2024/05/22 17:36:46 by nbenyahy         ###   ########.fr       */
+/*   Updated: 2024/05/23 21:11:22 by nbenyahy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ typedef struct s_env
 	sem_t		*print;
 	sem_t		*meal;
 	sem_t		*meal_nbr;
+	sem_t		*init_time;
 	bool		status;
 }				t_env;
 
@@ -68,6 +69,8 @@ typedef struct s_philo
 	int			eating_nbr;
 	long long	last_meal;
 	sem_t		*meal;
+	sem_t		*starting;
+	char		*starting_name;
 	void		*next;
 }				t_philo;
 
@@ -78,9 +81,12 @@ int				n3ass(long long time);
 t_philo			*parsing(int ac, char **av);
 char			*ft_itoa(int n);
 void			kill_process(t_philo *philo);
-int				actions(t_philo *philo, char *action);
+int				actions(t_philo *philo, char *action, int );
 void			listener(t_philo *philo);
 void			meal_nbr_listener(t_philo *philo);
 void			*killer(t_philo *philo);
+long long	meal_method(t_philo *philo, char method, long long new_val);
+void	cleaning(t_philo *philo);
+void eat(t_philo *philo, long long *i);
 
 #endif

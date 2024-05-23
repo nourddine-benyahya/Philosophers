@@ -6,7 +6,7 @@
 /*   By: nbenyahy <nbenyahy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 19:18:06 by nbenyahy          #+#    #+#             */
-/*   Updated: 2024/05/21 11:26:32 by nbenyahy         ###   ########.fr       */
+/*   Updated: 2024/05/23 21:03:24 by nbenyahy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,16 +20,16 @@ int	ft_atoi(const char *nptr, t_error *error)
 	if (*nptr == '-' || *nptr == '+')
 	{
 		if (*nptr == '-')
-			return (set_error(error, \
-								REDHB "huh it's negative value\n" RESET, 1), 1);
+			return (set_error(error, REDHB "huh it's negative value\n" RESET,
+					1), 1);
 		nptr++;
 	}
 	while (*nptr && (*nptr) >= '0' && (*nptr) <= '9')
 	{
 		res = (res * 10) + (*nptr - '0');
 		if (res > INT_MAX)
-			return (set_error(error, \
-								REDHB "it's more than int max\n" RESET, 1), 1);
+			return (set_error(error, REDHB "it's more than int max\n" RESET, 1),
+				1);
 		nptr++;
 	}
 	if (*nptr)
@@ -45,6 +45,9 @@ t_philo	*init_philo(t_env *env, int i)
 	if (!philo)
 		return (NULL);
 	philo->env = env;
+	philo->starting_name = ft_itoa((i + 1) * -1);
+	unlink(philo->starting_name);
+	philo->starting = sem_open(philo->starting_name, O_CREAT | O_EXCL, 0644, 0);
 	philo->mut_name = ft_itoa(i + 1);
 	unlink(philo->mut_name);
 	philo->meal = sem_open(philo->mut_name, O_CREAT | O_EXCL, 0644, 1);
@@ -78,8 +81,8 @@ t_env	*create_env(int ac, char **av)
 			free(env), NULL);
 	if (env->philo_num > 200 || env->time_to_die < 60 || env->time_to_eat < 60
 		|| env->time_to_sleep < 60)
-		return (printf(REDHB "the info it's not correct \n" RESET), \
-						free(error->msg), free(error), free(env), NULL);
+		return (printf(REDHB "the info it's not correct \n" RESET),
+			free(error->msg), free(error), free(env), NULL);
 	return (free(error->msg), free(error), env);
 }
 
@@ -126,7 +129,9 @@ t_philo	*parsing(int ac, char **av)
 	sem_unlink("meal");
 	sem_unlink("start");
 	sem_unlink("meal_nbr");
+	sem_unlink("init_time");
 	env->mutex = sem_open("semaphore", O_CREAT | O_EXCL, 0644, 0);
+	env->init_time = sem_open("init_time", O_CREAT | O_EXCL, 0644, 0);
 	env->forks = sem_open("forks", O_CREAT | O_EXCL, 0644, env->philo_num);
 	env->print = sem_open("print", O_CREAT | O_EXCL, 0644, 1);
 	env->meal = sem_open("meal", O_CREAT | O_EXCL, 0644, 1);

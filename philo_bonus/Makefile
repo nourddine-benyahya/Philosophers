@@ -1,4 +1,4 @@
-SRC = sources/parsing.c sources/helper.c sources/philosophers.c sources/ft_itoa.c sources/actions.c
+SRC = sources/parsing.c sources/methods.c sources/helper.c sources/philosophers.c sources/ft_itoa.c sources/actions.c
 
 OBJ = $(SRC:.c=.o)
 

@@ -6,7 +6,7 @@
 /*   By: nbenyahy <nbenyahy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/12 18:20:52 by nbenyahy          #+#    #+#             */
-/*   Updated: 2024/05/20 17:45:44 by nbenyahy         ###   ########.fr       */
+/*   Updated: 2024/05/23 21:05:28 by nbenyahy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,4 +65,27 @@ long long	time_stamp(void)
 
 	gettimeofday(&tv, NULL);
 	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
+}
+
+void	cleaning(t_philo *philo)
+{
+	t_philo	*tmp;
+
+	tmp = philo;
+	while (tmp)
+	{
+		sem_close(philo->meal);
+		sem_unlink(philo->mut_name);
+		tmp = tmp->next;
+	}
+	sem_unlink("meal_nbr");
+	sem_close(philo->env->start);
+	sem_unlink("start");
+	sem_close(philo->env->forks);
+	sem_unlink("forks");
+	sem_close(philo->env->mutex);
+	sem_unlink("semaphore");
+	sem_close(philo->env->print);
+	sem_unlink("print");
+	free(philo->env);
 }
