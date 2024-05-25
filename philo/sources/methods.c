@@ -6,7 +6,7 @@
 /*   By: nbenyahy <nbenyahy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/22 12:00:03 by nbenyahy          #+#    #+#             */
-/*   Updated: 2024/05/22 12:06:08 by nbenyahy         ###   ########.fr       */
+/*   Updated: 2024/05/25 19:11:02 by nbenyahy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,11 +45,17 @@ int	meal_nbr_total(t_philo *philos, char method, int new_val)
 	int	meal;
 
 	meal = new_val;
-	pthread_mutex_lock(&philos->env->nbr_must_eat_total_mutex);
 	if (method == 'g')
+	{
+		pthread_mutex_lock(&philos->env->nbr_must_eat_total_mutex);
 		meal = philos->env->nbr_must_eat_total;
+		pthread_mutex_unlock(&philos->env->nbr_must_eat_total_mutex);
+	}
 	else if (method == 's')
-		philos->env->nbr_must_eat_total = new_val;
-	pthread_mutex_unlock(&philos->env->nbr_must_eat_total_mutex);
+	{
+		pthread_mutex_lock(&philos->env->nbr_must_eat_total_mutex);
+		philos->env->nbr_must_eat_total-- ;
+		pthread_mutex_unlock(&philos->env->nbr_must_eat_total_mutex);
+	}
 	return (meal);
 }

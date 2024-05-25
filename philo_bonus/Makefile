@@ -4,7 +4,7 @@ OBJ = $(SRC:.c=.o)
 
 CC = cc
 
-CFLAGS = -Wall -Wextra -Werror -I includes -pthread
+CFLAGS = -Wall -Wextra -Werror -I includes -pthread #
 
 NAME = philo_bonus
 

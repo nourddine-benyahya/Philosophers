@@ -6,7 +6,7 @@
 /*   By: nbenyahy <nbenyahy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:13:19 by nbenyahy          #+#    #+#             */
-/*   Updated: 2024/05/22 16:41:24 by nbenyahy         ###   ########.fr       */
+/*   Updated: 2024/05/25 19:31:50 by nbenyahy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,13 @@
 # define PHILOSOPHERS_H
 
 # include "env.h"
-# include "limits.h"
-# include "pthread.h"
-# include "stdbool.h"
-# include "stdio.h"
-# include "stdlib.h"
-# include "sys/time.h"
-# include "unistd.h"
+# include <limits.h>
+# include <pthread.h>
+# include <stdbool.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <sys/time.h>
+# include <unistd.h>
 
 # define LEFT_FORK "has taken a fork"
 # define RIGHT_FORK "has taken a fork"

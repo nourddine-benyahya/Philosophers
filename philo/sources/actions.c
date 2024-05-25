@@ -6,7 +6,7 @@
 /*   By: nbenyahy <nbenyahy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 15:44:51 by nbenyahy          #+#    #+#             */
-/*   Updated: 2024/05/22 17:49:11 by nbenyahy         ###   ########.fr       */
+/*   Updated: 2024/05/25 19:26:03 by nbenyahy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ int	sleeping(long long time, t_philo *philos)
 		if (time_stamp() - timer >= time)
 			break ;
 		status = status_method(philos, 'g', NULL);
-		usleep(58);
+		usleep(50);
 	}
 	return (0);
 }
@@ -33,17 +33,16 @@ int	actions(t_philo *philos, char *action)
 {
 	int	status;
 
+	pthread_mutex_lock(&philos->env->printing);
 	if (status_method(philos, 'g', NULL))
 	{
-		pthread_mutex_lock(&philos->env->printing);
-		if (status_method(philos, 'g', NULL))
-			printf("%lld %d %s\n", time_stamp() - philos->env->time, \
+		printf("%lld %d %s\n", time_stamp() - philos->env->time, \
 				philos->index, action);
-		pthread_mutex_unlock(&philos->env->printing);
 		status = 0;
 	}
 	else
 		status = 1;
+	pthread_mutex_unlock(&philos->env->printing);
 	return (status);
 }
 
@@ -87,7 +86,6 @@ int	eat(t_philo *philo)
 		put_forks_down(philo->fork.right, philo->fork.left);
 		return (1);
 	}
-	meal_method(philo, 's', time_stamp());
 	if (sleeping(philo->env->time_to_eat, philo) == 1)
 	{
 		put_forks_down(philo->fork.right, philo->fork.left);
@@ -99,7 +97,9 @@ int	eat(t_philo *philo)
 		if (philo->eating_nbr != philo->env->nbr_must_eat)
 		{
 			philo->eating_nbr++;
-			meal_nbr_total(philo, 's', --philo->env->nbr_must_eat_total);
+			pthread_mutex_lock(&philo->env->nbr_must_eat_total_mutex);
+			philo->env->nbr_must_eat_total-- ;
+			pthread_mutex_unlock(&philo->env->nbr_must_eat_total_mutex);
 		}
 	}
 	if (meal_nbr_total(philo, 'g', 0) == 0)

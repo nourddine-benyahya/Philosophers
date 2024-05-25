@@ -6,7 +6,7 @@
 /*   By: nbenyahy <nbenyahy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/22 19:30:47 by nbenyahy          #+#    #+#             */
-/*   Updated: 2024/05/23 21:20:32 by nbenyahy         ###   ########.fr       */
+/*   Updated: 2024/05/25 17:03:23 by nbenyahy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,17 +25,27 @@ long long	meal_method(t_philo *philo, char method, long long new_val)
 	sem_post(philo->meal);
 	return (meal);
 }
+
 void	eat(t_philo *philo, long long *i)
 {
 	sem_wait(philo->env->forks);
-	actions(philo, RIGHT_FORK, 0);
+	actions(philo, RIGHT_FORK);
 	sem_wait(philo->env->forks);
-	actions(philo, LEFT_FORK, 1);
-	// meal_method(philo, 's', time_stamp());
+	actions(philo, LEFT_FORK);
+	meal_method(philo, 's', time_stamp());
+	actions(philo, EATING);
 	n3ass(philo->env->time_to_eat);
+	sem_post(philo->env->forks);
+	sem_post(philo->env->forks);
 	*i += 1;
 	if (philo->env->nbr_must_eat != -1 && *i == philo->env->nbr_must_eat)
 		sem_post(philo->env->meal_nbr);
-	sem_post(philo->env->forks);
-	sem_post(philo->env->forks);
+}
+
+long long	time_stamp(void)
+{
+	struct timeval	tv;
+
+	gettimeofday(&tv, NULL);
+	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
 }

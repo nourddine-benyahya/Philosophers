@@ -6,22 +6,20 @@
 /*   By: nbenyahy <nbenyahy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 15:44:51 by nbenyahy          #+#    #+#             */
-/*   Updated: 2024/05/23 21:21:46 by nbenyahy         ###   ########.fr       */
+/*   Updated: 2024/05/25 17:01:10 by nbenyahy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-int	actions(t_philo *philo, char *action, int a)
+int	actions(t_philo *philo, char *action)
 {
-	if (a == 1)
-		meal_method(philo, 's', time_stamp());
+	long long	time;
+
+	time = time_stamp() - philo->env->time;
 	sem_wait(philo->env->print);
-	printf("%lld %d %s\n", time_stamp() - philo->env->time, philo->index,
+	printf("%lld %d %s\n", time, philo->index,
 		action);
-	if (a == 1)
-		printf("%lld %d %s\n", time_stamp() - philo->env->time, philo->index,
-			EATING);
 	sem_post(philo->env->print);
 	return (0);
 }
@@ -29,15 +27,15 @@ int	actions(t_philo *philo, char *action, int a)
 void	meal_nbr_listener(t_philo *philo)
 {
 	t_philo	*tmp;
+	int		i;
 
+	i = 0;
 	tmp = philo;
-	while (tmp)
+	while (i < tmp->env->philo_num)
 	{
 		sem_wait(tmp->env->meal_nbr);
-		tmp = tmp->next;
+		i++;
 	}
-	tmp = philo;
-	// sem_wait(tmp->env->print);
 	while (tmp)
 	{
 		kill(tmp->process, 1);
@@ -47,16 +45,26 @@ void	meal_nbr_listener(t_philo *philo)
 
 void	listener(t_philo *philo)
 {
-	usleep(5000);
+	int			i;
+	long long	time;
+
+	i = 0;
+	usleep(4000);
 	while (1)
 	{
 		if (time_stamp() - meal_method(philo, 'g', 0) > philo->env->time_to_die)
 		{
+			time = time_stamp() - philo->env->time;
 			sem_wait(philo->env->print);
-			printf("%lld %d died\n", time_stamp() - philo->env->time,
+			printf("%lld %d died\n", time,
 				philo->index);
 			sem_post(philo->meal);
 			sem_post(philo->env->mutex);
+			while (i < philo->env->philo_num)
+			{
+				sem_post(philo->env->meal_nbr);
+				i++;
+			}
 		}
 		usleep(1000);
 	}

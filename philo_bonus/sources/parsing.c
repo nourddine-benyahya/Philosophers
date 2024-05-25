@@ -6,7 +6,7 @@
 /*   By: nbenyahy <nbenyahy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 19:18:06 by nbenyahy          #+#    #+#             */
-/*   Updated: 2024/05/23 21:03:24 by nbenyahy         ###   ########.fr       */
+/*   Updated: 2024/05/24 12:27:24 by nbenyahy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,15 +45,13 @@ t_philo	*init_philo(t_env *env, int i)
 	if (!philo)
 		return (NULL);
 	philo->env = env;
-	philo->starting_name = ft_itoa((i + 1) * -1);
-	unlink(philo->starting_name);
-	philo->starting = sem_open(philo->starting_name, O_CREAT | O_EXCL, 0644, 0);
 	philo->mut_name = ft_itoa(i + 1);
-	unlink(philo->mut_name);
-	philo->meal = sem_open(philo->mut_name, O_CREAT | O_EXCL, 0644, 1);
+	sem_unlink(philo->mut_name);
+	philo->meal = sem_open(philo->mut_name, O_CREAT | O_EXCL, 0777, 1);
+	if (philo->meal == SEM_FAILED)
+		return (NULL);
 	philo->last_meal = env->time;
 	philo->index = i + 1;
-	philo->eating_nbr = 0;
 	return (philo);
 }
 
@@ -119,26 +117,12 @@ t_philo	*parsing(int ac, char **av)
 	if (ac != 6 && ac != 5)
 		return (printf(REDHB "the number of arg not valid \n" RESET), NULL);
 	env = create_env(ac, av);
+	if (!env)
+		return (NULL);
+	if (!open_env_sem(env))
+		return (NULL);
 	if (env == NULL || env->nbr_must_eat == 0)
 		return (NULL);
-	env->status = true;
-	env->timer = time_stamp();
-	sem_unlink("semaphore");
-	sem_unlink("forks");
-	sem_unlink("print");
-	sem_unlink("meal");
-	sem_unlink("start");
-	sem_unlink("meal_nbr");
-	sem_unlink("init_time");
-	env->mutex = sem_open("semaphore", O_CREAT | O_EXCL, 0644, 0);
-	env->init_time = sem_open("init_time", O_CREAT | O_EXCL, 0644, 0);
-	env->forks = sem_open("forks", O_CREAT | O_EXCL, 0644, env->philo_num);
-	env->print = sem_open("print", O_CREAT | O_EXCL, 0644, 1);
-	env->meal = sem_open("meal", O_CREAT | O_EXCL, 0644, 1);
-	env->start = sem_open("start", O_CREAT | O_EXCL, 0644, 0);
-	env->meal_nbr = sem_open("meal_nbr", O_CREAT | O_EXCL, 0644, 0);
-	env->nbr_must_eat_total = env->nbr_must_eat * env->philo_num;
-	env->time = time_stamp();
 	philo = create_philos(env);
 	if (philo == NULL)
 		return (free(env), NULL);

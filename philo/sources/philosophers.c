@@ -6,7 +6,7 @@
 /*   By: nbenyahy <nbenyahy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:14:53 by nbenyahy          #+#    #+#             */
-/*   Updated: 2024/05/22 17:44:24 by nbenyahy         ###   ########.fr       */
+/*   Updated: 2024/05/25 20:33:19 by nbenyahy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ void	philos_lister(t_philo *philo, t_philo *head)
 	bool	status;
 
 	status = true;
+	usleep(4000);
 	while (status)
 	{
 		if (time_stamp() - meal_method(philo, 'g', 0) > philo->env->time_to_die)
@@ -36,12 +37,9 @@ void	philos_lister(t_philo *philo, t_philo *head)
 
 void	*routine(void *philo)
 {
-	bool	status;
-
-	status = true;
 	if (((t_philo *)philo)->index % 2 == 0)
 		_sleep((t_philo *)philo);
-	while (status)
+	while (1)
 	{
 		if (actions((t_philo *)philo, THINKING) == 1)
 			break ;
@@ -51,7 +49,6 @@ void	*routine(void *philo)
 			break ;
 		if (_sleep((t_philo *)philo) == 1)
 			break ;
-		status = status_method(((t_philo *)philo), 'g', NULL);
 	}
 	return (NULL);
 }

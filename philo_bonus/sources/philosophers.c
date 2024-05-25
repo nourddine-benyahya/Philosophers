@@ -6,7 +6,7 @@
 /*   By: nbenyahy <nbenyahy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:14:53 by nbenyahy          #+#    #+#             */
-/*   Updated: 2024/05/23 21:13:33 by nbenyahy         ###   ########.fr       */
+/*   Updated: 2024/05/25 17:07:18 by nbenyahy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,26 +20,22 @@ void	routine(t_philo *philo)
 	pthread_create(&philo->thread, NULL, (void *)listener, philo);
 	if (philo->index % 2 == 0)
 	{
-		actions(philo, SLEEPING, 0);
+		actions(philo, SLEEPING);
 		n3ass(philo->env->time_to_sleep);
 	}
 	while (1)
 	{
-		actions(philo, THINKING, 0);
+		actions(philo, THINKING);
 		eat(philo, &i);
-		actions(philo, SLEEPING, 0);
+		actions(philo, SLEEPING);
 		n3ass(philo->env->time_to_sleep);
 	}
 }
 
-int	main(int ac, char **av)
+void	create_philo(t_philo *philo)
 {
-	t_philo		*philo;
-	t_philo		*tmp;
+	t_philo	*tmp;
 
-	philo = parsing(ac, av);
-	if (philo == NULL)
-		return (1);
 	tmp = philo;
 	tmp->env->time = time_stamp();
 	while (tmp)
@@ -60,6 +56,16 @@ int	main(int ac, char **av)
 		waitpid(tmp->process, NULL, 0);
 		tmp = tmp->next;
 	}
+}
+
+int	main(int ac, char **av)
+{
+	t_philo	*philo;
+
+	philo = parsing(ac, av);
+	if (philo == NULL)
+		return (1);
+	create_philo(philo);
 	cleaning(philo);
 	return (0);
 }
