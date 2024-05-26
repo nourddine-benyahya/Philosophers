@@ -8,12 +8,11 @@ Philosophers is a 42 school project designed around Edsger Dijkstra's famous din
 
 ---
 
-:us: Read my articles in English about the concepts tackled in this project:
-* [Threads, Mutexes and Concurrent Programming in C](https://www.codequoi.com/en/threads-mutexes-and-concurrent-programming-in-c/)
+:us: Read this articles in English about the concepts tackled in this project:
+* [1 -Threads, Mutexes and Concurrent Programming in C](https://www.codequoi.com/en/threads-mutexes-and-concurrent-programming-in-c/)
 
-:fr: Lire mes articles en français sur les concepts abordés dans ce projet :
-* [Threads, mutex et programmation concurrente en C](https://www.codequoi.com/threads-mutex-et-programmation-concurrente-en-c/)
-
+or this :
+* [2 -Threads, Mutexes and Concurrent Programming in C](https://medium.com/@ruinadd/philosophers-42-guide-the-dining-philosophers-problem-893a24bc0fe2)
 ---
 
 ## Status 
@@ -90,10 +89,10 @@ Git clone the project and for the bonus part:
 ```shell
 cd philosophers/philo_bonus
 ```
-To compile, use ```make```:
+To compile, use ```make``` or:
 
 ```shell
-make
+make BUILD=pretty
 ```
 
 Run the program with the following arguments:
