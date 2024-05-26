@@ -14,7 +14,7 @@ all : $(NAME)
 $(NAME) : $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
 
-%.o : %.c includes/philosophers.h
+%.o : %.c includes/philosophers.h includes/env.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean :

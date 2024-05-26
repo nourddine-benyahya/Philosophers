@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philosophers.c                                     :+:      :+:    :+:   */
+/*   philosophers_bonus.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nbenyahy <nbenyahy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:14:53 by nbenyahy          #+#    #+#             */
-/*   Updated: 2024/05/25 17:07:18 by nbenyahy         ###   ########.fr       */
+/*   Updated: 2024/05/26 14:51:48 by nbenyahy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philosophers.h"
+#include "philosophers_bonus.h"
 
 void	routine(t_philo *philo)
 {
@@ -18,17 +18,19 @@ void	routine(t_philo *philo)
 
 	i = 0;
 	pthread_create(&philo->thread, NULL, (void *)listener, philo);
+	pthread_detach(philo->thread);
 	if (philo->index % 2 == 0)
 	{
 		actions(philo, SLEEPING);
 		n3ass(philo->env->time_to_sleep);
+		actions(philo, THINKING);
 	}
 	while (1)
 	{
-		actions(philo, THINKING);
 		eat(philo, &i);
 		actions(philo, SLEEPING);
 		n3ass(philo->env->time_to_sleep);
+		actions(philo, THINKING);
 	}
 }
 
@@ -41,6 +43,8 @@ void	create_philo(t_philo *philo)
 	while (tmp)
 	{
 		tmp->process = fork();
+		if (tmp->process == -1)
+			break ;
 		if (tmp->process == 0)
 			routine(tmp);
 		else
@@ -48,6 +52,7 @@ void	create_philo(t_philo *philo)
 	}
 	tmp = philo;
 	pthread_create(&tmp->thread, NULL, (void *)meal_nbr_listener, tmp);
+	pthread_detach(tmp->thread);
 	tmp = philo;
 	killer(tmp);
 	tmp = philo;

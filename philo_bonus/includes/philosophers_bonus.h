@@ -1,19 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philosophers.h                                     :+:      :+:    :+:   */
+/*   philosophers_bonus.h                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nbenyahy <nbenyahy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:13:19 by nbenyahy          #+#    #+#             */
-/*   Updated: 2024/05/25 17:08:17 by nbenyahy         ###   ########.fr       */
+/*   Updated: 2024/05/26 14:21:50 by nbenyahy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PHILOSOPHERS_H
-# define PHILOSOPHERS_H
+#ifndef PHILOSOPHERS_BONUS_H
+# define PHILOSOPHERS_BONUS_H
 
-# include "env.h"
+# include "env_bonus.h"
 # include "limits.h"
 # include "pthread.h"
 # include "semaphore.h"
@@ -51,7 +51,6 @@ typedef struct s_env
 	sem_t		*print;
 	sem_t		*meal;
 	sem_t		*meal_nbr;
-	bool		status;
 }				t_env;
 
 typedef struct s_philo
@@ -60,7 +59,6 @@ typedef struct s_philo
 	pthread_t	thread_listner;
 	pid_t		process;
 	t_env		*env;
-	long long	time_stemp;
 	int			index;
 	char		*mut_name;
 	long long	last_meal;
@@ -74,7 +72,6 @@ long long		time_stamp(void);
 int				n3ass(long long time);
 t_philo			*parsing(int ac, char **av);
 char			*ft_itoa(int n);
-void			kill_process(t_philo *philo);
 int				actions(t_philo *philo, char *action);
 void			listener(t_philo *philo);
 void			meal_nbr_listener(t_philo *philo);

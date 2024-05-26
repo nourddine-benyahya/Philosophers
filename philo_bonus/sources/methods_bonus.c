@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   methods.c                                          :+:      :+:    :+:   */
+/*   methods_bonus.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nbenyahy <nbenyahy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/22 19:30:47 by nbenyahy          #+#    #+#             */
-/*   Updated: 2024/05/25 17:03:23 by nbenyahy         ###   ########.fr       */
+/*   Updated: 2024/05/26 14:19:34 by nbenyahy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philosophers.h"
+#include "philosophers_bonus.h"
 
 long long	meal_method(t_philo *philo, char method, long long new_val)
 {
@@ -18,11 +18,16 @@ long long	meal_method(t_philo *philo, char method, long long new_val)
 
 	meal = new_val;
 	sem_wait(philo->meal);
+	printf("");
 	if (method == 'g')
 		meal = philo->last_meal;
 	else if (method == 's')
-		philo->last_meal = new_val;
+	{
+		if (time_stamp() - philo->last_meal <= philo->env->time_to_die)
+			philo->last_meal = new_val;
+	}
 	sem_post(philo->meal);
+	printf("");
 	return (meal);
 }
 
@@ -34,6 +39,7 @@ void	eat(t_philo *philo, long long *i)
 	actions(philo, LEFT_FORK);
 	meal_method(philo, 's', time_stamp());
 	actions(philo, EATING);
+	meal_method(philo, 's', time_stamp());
 	n3ass(philo->env->time_to_eat);
 	sem_post(philo->env->forks);
 	sem_post(philo->env->forks);

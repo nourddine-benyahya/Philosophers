@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   actions.c                                          :+:      :+:    :+:   */
+/*   actions_bonus.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nbenyahy <nbenyahy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 15:44:51 by nbenyahy          #+#    #+#             */
-/*   Updated: 2024/05/25 17:01:10 by nbenyahy         ###   ########.fr       */
+/*   Updated: 2024/05/26 14:19:15 by nbenyahy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philosophers.h"
+#include "philosophers_bonus.h"
 
 int	actions(t_philo *philo, char *action)
 {
@@ -49,7 +49,6 @@ void	listener(t_philo *philo)
 	long long	time;
 
 	i = 0;
-	usleep(4000);
 	while (1)
 	{
 		if (time_stamp() - meal_method(philo, 'g', 0) > philo->env->time_to_die)
@@ -58,15 +57,15 @@ void	listener(t_philo *philo)
 			sem_wait(philo->env->print);
 			printf("%lld %d died\n", time,
 				philo->index);
-			sem_post(philo->meal);
-			sem_post(philo->env->mutex);
 			while (i < philo->env->philo_num)
 			{
 				sem_post(philo->env->meal_nbr);
 				i++;
 			}
+			sem_post(philo->meal);
+			sem_post(philo->env->mutex);
 		}
-		usleep(1000);
+		usleep(2000);
 	}
 }
 

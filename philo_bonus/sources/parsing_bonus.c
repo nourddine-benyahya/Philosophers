@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parsing.c                                          :+:      :+:    :+:   */
+/*   parsing_bonus.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nbenyahy <nbenyahy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 19:18:06 by nbenyahy          #+#    #+#             */
-/*   Updated: 2024/05/24 12:27:24 by nbenyahy         ###   ########.fr       */
+/*   Updated: 2024/05/26 14:19:37 by nbenyahy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philosophers.h"
+#include "philosophers_bonus.h"
 
 int	ft_atoi(const char *nptr, t_error *error)
 {
@@ -77,8 +77,8 @@ t_env	*create_env(int ac, char **av)
 	if (error->exit_status == 1)
 		return (printf("%s", error->msg), free(error->msg), free(error),
 			free(env), NULL);
-	if (env->philo_num > 200 || env->time_to_die < 60 || env->time_to_eat < 60
-		|| env->time_to_sleep < 60)
+	if (env->philo_num > 200 || env->philo_num < 1 || env->time_to_die < 60
+		|| env->time_to_eat < 60 || env->time_to_sleep < 60)
 		return (printf(REDHB "the info it's not correct \n" RESET),
 			free(error->msg), free(error), free(env), NULL);
 	return (free(error->msg), free(error), env);

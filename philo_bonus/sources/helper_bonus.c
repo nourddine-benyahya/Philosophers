@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   helper.c                                           :+:      :+:    :+:   */
+/*   helper_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nbenyahy <nbenyahy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/12 18:20:52 by nbenyahy          #+#    #+#             */
-/*   Updated: 2024/05/25 17:01:59 by nbenyahy         ###   ########.fr       */
+/*   Updated: 2024/05/26 14:19:31 by nbenyahy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philosophers.h"
+#include "philosophers_bonus.h"
 
 int	n3ass(long long time)
 {
@@ -63,13 +63,6 @@ void	cleaning(t_philo *philo)
 {
 	t_philo	*tmp;
 
-	tmp = philo;
-	while (tmp)
-	{
-		sem_close(philo->meal);
-		sem_unlink(philo->mut_name);
-		tmp = tmp->next;
-	}
 	sem_close(philo->env->forks);
 	sem_unlink("forks");
 	sem_close(philo->env->mutex);
@@ -81,6 +74,16 @@ void	cleaning(t_philo *philo)
 	sem_close(philo->env->meal_nbr);
 	sem_unlink("meal_nbr");
 	free(philo->env);
+	tmp = philo;
+	while (philo)
+	{
+		tmp = philo;
+		sem_close(philo->meal);
+		sem_unlink(philo->mut_name);
+		free(philo->mut_name);
+		philo = philo->next;
+		free(tmp);
+	}
 }
 
 t_env	*open_env_sem(t_env *env)
