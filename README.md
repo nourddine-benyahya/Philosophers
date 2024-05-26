@@ -89,10 +89,10 @@ Git clone the project and for the bonus part:
 ```shell
 cd philosophers/philo_bonus
 ```
-To compile, use ```make``` or:
+To compile, use ```make```
 
 ```shell
-make BUILD=pretty
+make
 ```
 
 Run the program with the following arguments:
