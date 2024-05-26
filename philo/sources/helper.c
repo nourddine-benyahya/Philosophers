@@ -6,7 +6,7 @@
 /*   By: nbenyahy <nbenyahy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/12 18:20:52 by nbenyahy          #+#    #+#             */
-/*   Updated: 2024/05/22 16:41:24 by nbenyahy         ###   ########.fr       */
+/*   Updated: 2024/05/26 15:09:03 by nbenyahy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ void	set_error(t_error *error, char *msg, int exit_status)
 void	join_and_clean(t_philo *philo)
 {
 	t_philo	*tmp;
+	t_philo	*prev;
 
 	tmp = philo;
 	while (tmp)
@@ -56,12 +57,13 @@ void	join_and_clean(t_philo *philo)
 		tmp = tmp->next;
 	}
 	free(philo->env);
-	while (philo)
+	tmp = philo;
+	while (tmp)
 	{
-		tmp = philo;
-		philo = philo->next;
-		free(tmp->fork.right);
-		free(tmp);
+		prev = tmp;
+		free(prev->fork.right);
+		tmp = tmp->next;
+		free(prev);
 	}
 }
 
