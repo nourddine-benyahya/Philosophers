@@ -6,7 +6,7 @@
 /*   By: nbenyahy <nbenyahy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:14:53 by nbenyahy          #+#    #+#             */
-/*   Updated: 2024/05/26 14:51:48 by nbenyahy         ###   ########.fr       */
+/*   Updated: 2024/05/26 15:50:00 by nbenyahy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,14 +23,13 @@ void	routine(t_philo *philo)
 	{
 		actions(philo, SLEEPING);
 		n3ass(philo->env->time_to_sleep);
-		actions(philo, THINKING);
 	}
 	while (1)
 	{
+		actions(philo, THINKING);
 		eat(philo, &i);
 		actions(philo, SLEEPING);
 		n3ass(philo->env->time_to_sleep);
-		actions(philo, THINKING);
 	}
 }
 
