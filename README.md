@@ -60,10 +60,10 @@ Git clone the project and for the mandatory part:
 ```shell
 cd philosophers/philo
 ```
-To compile, use ```make``` or:
+To compile, use ```make``` :
 
 ```shell
-make BUILD=pretty
+make
 ```
 
 Run the program with the following arguments:
